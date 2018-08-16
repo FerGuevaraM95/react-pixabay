@@ -3,24 +3,39 @@ import React, { Component } from 'react';
 import Searcher from '../Searcher'
 import Result from '../Result';
 
+import './app.css';
+
 class App extends Component {
 
     state = {
         term: '',
         images: [],
-        page: ''
+        page: '',
+        loading: false
     }
 
-    requestAPI = () => {
+    requestAPI = async () => {
         const term = this.state.term;
         const page = this.state.page
         const url = `https://pixabay.com/api/?key=9844945-4ff0d46144de02b9ea0ff7bba&q=${term}&per_page=30&page=${page}`;
 
         console.log(url);
 
-        fetch(url)
-            .then(response => response.json())
-            .then(result => this.setState({images: result.hits}))
+        await fetch(url)
+            .then(response => {
+                this.setState({
+                    loading: true
+                })
+                return response.json()
+            })
+            .then(result => {
+                setTimeout(() => {
+                    this.setState({
+                        images: result.hits,
+                        loading: false
+                    })
+                }, 1600);
+            })
     }
 
     searchData = (term) => {
@@ -68,6 +83,25 @@ class App extends Component {
     }
 
   render() {
+      const loading = this.state.loading;
+
+      let result;
+
+      if(loading) {
+          result =  <div className="mt-5 sk-folding-cube">
+                        <div className="sk-cube1 sk-cube"></div>
+                        <div className="sk-cube2 sk-cube"></div>
+                        <div className="sk-cube4 sk-cube"></div>
+                        <div className="sk-cube3 sk-cube"></div>
+                    </div>
+      } else {
+          result =  <Result
+                        images={this.state.images}
+                        previousPage={this.previousPage}
+                        nextPage={this.nextPage}
+                    />
+      }
+
     return (
         <div className="app container">
             <div className="jumbotron">
@@ -77,11 +111,7 @@ class App extends Component {
                 />
             </div>
             <div className="row justify-content-center">
-                <Result
-                    images={this.state.images}
-                    previousPage={this.previousPage}
-                    nextPage={this.nextPage}
-                />
+                {result}
             </div>
         </div>
     );
