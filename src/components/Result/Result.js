@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
 import Image from '../Image';
+import Pagination from '../Pagination';
 
 class Result extends Component {
 
@@ -10,7 +11,7 @@ class Result extends Component {
 
         return (
             <React.Fragment>
-                <div className="col-12 p-5 row">
+                <div id="result" className="col-12 p-5 row">
                     {this.props.images.map(image => (
                         <Image
                             key={image.id}
@@ -18,6 +19,10 @@ class Result extends Component {
                         />
                     ))}
                 </div>
+                <Pagination
+                    previousPage={this.props.previousPage}
+                    nextPage={this.props.nextPage}
+                />
             </React.Fragment>
         )
     }
